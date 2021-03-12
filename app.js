@@ -38,7 +38,7 @@ app.get("/json2geojson/:jsonfile",(req,res)=>{})
 
 app.post("/gps", (req, res) => {
     console.log(req.body);
-    fs.readFile("./csv_Data/day2.json", "utf8", function (err, data) {
+    fs.readFile("./csv_Data/day2-1.json", "utf8", function (err, data) {
         if (err) console.error(err.code, ":|:", err.message);
         if (data) {
             var obj = JSON.parse(data);
@@ -49,7 +49,7 @@ app.post("/gps", (req, res) => {
             obj.push(req.body);
         }
         var gpsData = JSON.stringify(obj);
-        fs.writeFile("./csv_Data/day2.json", gpsData, function (err) {
+        fs.writeFile("./csv_Data/day2-1.json", gpsData, function (err) {
             if (err) return console.log(err);
             console.log("data added");
         });
