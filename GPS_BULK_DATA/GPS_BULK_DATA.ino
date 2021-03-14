@@ -17,8 +17,8 @@
 #define BMP_CS   (10)
 #define DHT11_PIN D3
 
- String serverName = "http://192.168.0.157:3000/";
-//String serverName = "http://192.168.0.194:3000/";
+// String serverName = "http://192.168.0.157:3000/";
+String serverName = "http://192.168.0.194:3000/";
 static const int RXPin = D5, TXPin = D6;
 
 static const uint32_t GPSBaud = 9600;
@@ -50,7 +50,7 @@ DHTesp dht;
 int state = 0;
 static int dataView = 0;
 
-String sSpeed, sLat, sLng, sDate, sTime, sAge, sHDOP, sPCS, sFCS, sCP, sSwFIX;
+String sSatAtl,sSpeed, sLat, sLng, sDate, sTime, sAge, sHDOP, sPCS, sFCS, sCP, sSwFIX;
 
 void setup()
 {
@@ -137,6 +137,7 @@ void loop() {
         Serial.println(payload.json());
 
         // LCD Print the Data
+        sSatAtl = "Sat:" + GPS["sats"] + " Alt:" + GPS["alt"];
         sSpeed = "Speed:" + GPS["speed"];
         sLat = "Lat:" + GPS["lati"];
         sLng = "Lng:" + GPS["longi"];
@@ -154,10 +155,8 @@ void loop() {
             lcd.clear();
             //        |sats:__ Alt:____|
             //        |   speed:____   |
-            lcd.setCursor(0, 0);
-            lcd.print("Sat:" + payload["sats"]);
-            lcd.setCursor(5, 0);
-            lcd.print( " Alt:" + payload["alt"] + "m");
+            lcd.setCursor(centerDo(sSatAtl, 16), 0);
+            lcd.print(sSatAtl);
             lcd.setCursor(centerDo(sSpeed, 16), 1);
             lcd.print(sSpeed);
             break;

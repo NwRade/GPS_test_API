@@ -39,7 +39,7 @@ app.post("/gps", (req, res) => {
         "BMP": JSON.parse(req.body.BMP),
         "DHT11": JSON.parse(req.body.DHT11),
     }
-    console.log(payloadData.GPS);
+    
     fs.readFile("./csv_Data/fullDay-f.json", "utf8", function (err, data) {
         if (err) console.error(err.code, ":|:", err.message);
         if (data) {
