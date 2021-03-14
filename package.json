@@ -4,7 +4,7 @@
   "description": "A server for handling and storing all the data provided by the u-blox neo 6m GPS module for study",
   "main": "app.js",
   "scripts": {
-    "dev": "nodemon --ignore 'csv_Data' app.js"
+    "dev": "nodemon --ignore ['csv_Data','test.js'] app.js"
   },
   "author": "Adwait Narayan Pradhan",
   "license": "ISC",
