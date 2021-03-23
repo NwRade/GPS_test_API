@@ -3,10 +3,12 @@ const app = express();
 const fs = require("fs");
 const bodyParser = require("body-parser");
 const converter = require("json-2-csv");
+const cors = require("cors");
 
 let track = {};
 
 app.use(bodyParser.json());
+app.use(cors());
 app.get("/", (req, res) => {
     console.log("Hello");
     res.end();
@@ -45,7 +47,7 @@ app.post("/gps", (req, res) => {
     // let fileName = req.params.fileName;
     track = payloadData;
     console.log(payloadData);
-    fs.readFile(`./csv_Data/updated.json`, "utf8", function (err, data) {
+    fs.readFile(`./csv_Data/live-test.json`, "utf8", function (err, data) {
         if (err) console.error(err.code, ":|:", err.message);
         if (data) {
             var obj = JSON.parse(data);
@@ -56,7 +58,7 @@ app.post("/gps", (req, res) => {
             obj.push(payloadData);
         }
         var gpsData = JSON.stringify(obj);
-        fs.writeFile("./csv_Data/updated.json", gpsData, function (err) {
+        fs.writeFile("./csv_Data/live-test.json", gpsData, function (err) {
             if (err) return console.log(err);
             console.log("data added");
         });
@@ -67,7 +69,26 @@ app.post("/gps", (req, res) => {
 app.get("/gps/live", (req, res) => {
     res.send(track);
 });
+let index = 600;
+app.get("/gps/relive/:file", (req, res) => {
+    fs.readFile(`./csv_Data/${req.params.file}`, "utf8", (err, json) => {
+        json = JSON.parse(json);
+        if (err) res.status(404).send(`no such file, ${err.code}`);
+        else {
+            if (index >= json.length) {
+                res.status(400).send("No more file");
+            }
 
+            res.status(200).send(json[index]);
+            index += 12;
+        }
+    });
+});
+
+app.get("/gps/live/reset", (req, res) => {
+    index = 600;
+    res.status(200).send("reset success");
+});
 const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`Server started at http://localhost:${PORT}....`);
