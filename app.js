@@ -4,11 +4,14 @@ const fs = require("fs");
 const bodyParser = require("body-parser");
 const converter = require("json-2-csv");
 
+let track = {};
+
 app.use(bodyParser.json());
 app.get("/", (req, res) => {
     console.log("Hello");
     res.end();
 });
+
 app.get("/jsons", (req, res) => {
     fs.readdir("./csv_Data/", (err, files) => {
         res.send(files);
@@ -22,7 +25,7 @@ app.get("/jsons/:file", (req, res) => {
             res.status(200).send(json);
         });
     else res.status(403).send("not a json file");
-})
+});
 
 app.get("/jsons/:file/download", (req, res) => {
     if (req.params.file.includes(".json"))
@@ -31,16 +34,18 @@ app.get("/jsons/:file/download", (req, res) => {
             res.download(`./csv_Data/${req.params.file}`, req.params.file);
         });
     else res.status(403).send("not a json file");
-})
+});
 
 app.post("/gps", (req, res) => {
     let payloadData = {
-        "GPS": JSON.parse(req.body.GPS),
-        "BMP": JSON.parse(req.body.BMP),
-        "DHT11": JSON.parse(req.body.DHT11),
-    }
+        GPS: JSON.parse(req.body.GPS),
+        BMP: JSON.parse(req.body.BMP),
+        DHT11: JSON.parse(req.body.DHT11),
+    };
+    // let fileName = req.params.fileName;
+    track = payloadData;
     console.log(payloadData);
-    fs.readFile("./csv_Data/fullDay-f.json", "utf8", function (err, data) {
+    fs.readFile(`./csv_Data/updated.json`, "utf8", function (err, data) {
         if (err) console.error(err.code, ":|:", err.message);
         if (data) {
             var obj = JSON.parse(data);
@@ -51,12 +56,16 @@ app.post("/gps", (req, res) => {
             obj.push(payloadData);
         }
         var gpsData = JSON.stringify(obj);
-        fs.writeFile("./csv_Data/fullDay-f.json", gpsData, function (err) {
+        fs.writeFile("./csv_Data/updated.json", gpsData, function (err) {
             if (err) return console.log(err);
             console.log("data added");
         });
     });
     res.status(200).send("OK");
+});
+
+app.get("/gps/live", (req, res) => {
+    res.send(track);
 });
 
 const PORT = 3000;

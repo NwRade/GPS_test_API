@@ -1,0 +1,1 @@
+[{"GPS":{"sats":"7","lati":"26.76235867","longi":"88.38681250","age":"1012","date":"14/3/2021","time":"4:27:49","hdop":"129","speed":"0.61","alt":"142.60","failedCheckSum":"1781","passedCheckSum":"18622","sentWithFix":"4948","charsProcessed":"1278348"},"BMP":{"Temp":"0.00","Atm":"0.00","Alt":"44330.00"},"DHT11":{"humidity":"62.00","Temp":"25.90","heatInd":"26.89"}}]

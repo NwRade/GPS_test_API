@@ -15,22 +15,23 @@
 #define BMP_MISO (12)
 #define BMP_MOSI (11)
 #define BMP_CS   (10)
-#define DHT11_PIN D3
+#define DHT11_PIN D4
 
 // String serverName = "http://192.168.0.157:3000/";
-String serverName = "http://192.168.0.194:3000/";
-static const int RXPin = D5, TXPin = D6;
+// String serverName = "http://192.168.0.194:3000/";
+String serverName = "http://192.168.43.1:3000/";
+static const int RXPin = D6, TXPin = D5;
 
 static const uint32_t GPSBaud = 9600;
 
-const char* ssid = "Syntax Error";
-const char* password = "VpjBBcDfDesC7PF";
+//const char* ssid = "Syntax Error";
+//const char* password = "VpjBBcDfDesC7PF";
 
 //const char* ssid = "Redmi";
 //const char* password = "sit0972001";
 
-//const char* ssid = "realme 2"; //ssid of your wifi
-//const char* password = "87654321"; //password of your wifi
+const char* ssid = "realme 2"; //ssid of your wifi
+const char* password = "87654321"; //password of your wifi
 
 Dictionary &payload = *(new Dictionary());
 Dictionary &GPS = *(new Dictionary());
@@ -51,9 +52,20 @@ int state = 0;
 static int dataView = 0;
 
 String sSatAtl,sSpeed, sLat, sLng, sDate, sTime, sAge, sHDOP, sPCS, sFCS, sCP, sSwFIX;
-
+String sBAlt, sBTemp, sBAtm, sDHum, sDTemp, sDHInd;
 void setup()
 {
+  // Setup The I2C LCD Dipslay
+  lcd.begin(16, 2);
+  //    lcd.begin(20,4);
+  lcd.init();
+  lcd.backlight();
+  lcd.setCursor(0, 0);
+  lcd.print("Simple GPS model");
+  lcd.setCursor(centerDo("by Adwait", 16), 1);
+  lcd.print("by Adwait");
+
+  
   pinMode(D7, INPUT);
   pinMode(LED_BUILTIN, OUTPUT);
   Serial.begin(115200);
@@ -71,7 +83,7 @@ void setup()
   Serial.println("Connection Established!!");
   Serial.println(WiFi.localIP());  // Print the IP address
   dht.setup(DHT11_PIN, DHTesp::DHT11);
-  if (!bmp.begin()) {
+  if (!bmp.begin(0x76)) { // havve to reconfigure this bmp library
     Serial.println(F("Could not find a valid BMP280 sensor, check wiring!"));
   }
   bmp.setSampling(Adafruit_BMP280::MODE_NORMAL,     /* Operating Mode. */
@@ -79,15 +91,7 @@ void setup()
                   Adafruit_BMP280::SAMPLING_X16,    /* Pressure oversampling */
                   Adafruit_BMP280::FILTER_X16,      /* Filtering. */
                   Adafruit_BMP280::STANDBY_MS_500); /* Standby time. */
-  // Setup The I2C LCD Dipslay
-  lcd.begin(16, 2);
-  //    lcd.begin(20,4);
-  lcd.init();
-  lcd.backlight();
-  lcd.setCursor(0, 0);
-  lcd.print("Simple GPS model");
-  lcd.setCursor(centerDo("by Adwait", 16), 1);
-  lcd.print("by Adwait");
+  
   delay(1000);
   lcd.clear();
 }
@@ -131,11 +135,12 @@ void loop() {
         payload("BMP",BMP.json());
         payload("DHT11",DHT1.json());
         
-        delay(dht.getMinimumSamplingPeriod());
-        smartDelay(1000);
         
-        Serial.println(payload.json());
-
+        smartDelay(dht.getMinimumSamplingPeriod());
+        
+        Serial.println(GPS.json());
+Serial.println(BMP.json());
+Serial.println(DHT1.json());
         // LCD Print the Data
         sSatAtl = "Sat:" + GPS["sats"] + " Alt:" + GPS["alt"];
         sSpeed = "Speed:" + GPS["speed"];
@@ -149,6 +154,17 @@ void loop() {
         sCP = "CP: " + GPS["charsProcessed"];
         sSwFIX = "SwFIX: " + GPS["sentWithFix"];
         sPCS = "PCS: " + GPS["passedCheckSum"];
+        
+        sBAlt ="Alt2: " + BMP["Alt"];
+        sBTemp = "Temp1: " + BMP["Temp"];
+        sBAtm = "ATM: " + BMP["Atm"];
+        
+        sDHum = "Humi: " + DHT1["humidity"];
+        sDTemp = "Temp2: " + DHT1["Temp"];
+        sDHInd = "H.Index: " + DHT1["heatInd"];
+//      {"sats":"5","lati":"26.76236017","longi":"88.38688600","age":"1","date":"19/3/2021","time":"14:15:27","hdop":"208","speed":"1.78","alt":"145.80","failedCheckSum":"121","passedCheckSum":"1780","sentWithFix":"473","charsProcessed":"121169"}
+//      {"Temp":"29.48","Atm":"0.98","Alt":"172.62"}
+//      {"humidity":"54.00","Temp":"29.90","heatInd":"31.55"}
 
         switch (dataView) {
           case 0:
@@ -205,10 +221,21 @@ void loop() {
             lcd.setCursor(centerDo(sPCS, 16), 1);
             lcd.print(sPCS);
             break;
+//             case 6:
+//            lcd.clear();
+//            //        |Alt2:____ Atm:__|
+//            //        | PCS: _________ |
+//            lcd.setCursor(centerDo(sSwFIX, 16), 0);
+//            lcd.print(sSwFIX);
+//            lcd.setCursor(centerDo(sPCS, 16), 1);
+//            lcd.print(sPCS);
+//            break;
           default:
             dataView = 0;
             break;
         }
+
+        
                 digitalWrite(LED_BUILTIN, LOW );
                 String serverPath = serverName + "gps";
                 http.begin(serverPath.c_str());
