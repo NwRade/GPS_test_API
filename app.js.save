@@ -47,7 +47,7 @@ app.post("/gps", (req, res) => {
     // let fileName = req.params.fileName;
     track = payloadData;
     console.log(payloadData);
-    fs.readFile(`./csv_Data/live-test1.json`, "utf8", function (err, data) {
+    fs.readFile(`./csv_Data/live-test.json`, "utf8", function (err, data) {
         if (err) console.error(err.code, ":|:", err.message);
         if (data) {
             var obj = JSON.parse(data);
@@ -58,7 +58,7 @@ app.post("/gps", (req, res) => {
             obj.push(payloadData);
         }
         var gpsData = JSON.stringify(obj);
-        fs.writeFile("./csv_Data/live-test1.json", gpsData, function (err) {
+        fs.writeFile("./csv_Data/live-test.json", gpsData, function (err) {
             if (err) return console.log(err);
             console.log("data added");
         });
@@ -76,12 +76,12 @@ app.get("/gps/relive/:file", (req, res) => {
         if (err) res.status(404).send(`no such file, ${err.code}`);
         else {
             if (index >= json.length) {
-                console.log(index);
+                console.log(ind
 		res.status(400).send("No more file");
             }
 	    console.log(index);
             res.status(200).send(json[index]);
-            index += 50;
+            index += 12;
         }
     });
 });

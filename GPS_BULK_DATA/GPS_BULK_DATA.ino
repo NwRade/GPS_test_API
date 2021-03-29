@@ -19,8 +19,8 @@
 
 // String serverName = "http://192.168.0.157:3000/";
 // String serverName = "http://192.168.0.194:3000/";
-//String serverName = "http://192.168.43.1:3000/";
-String serverName = "http://192.168.29.49:3000/";
+String serverName = "http://192.168.43.49:2999/";
+//String serverName = "http://192.168.29.49:3000/";
 static const int RXPin = D6, TXPin = D5;
 
 static const uint32_t GPSBaud = 9600;
@@ -31,11 +31,11 @@ static const uint32_t GPSBaud = 9600;
 //const char* ssid = "Redmi";
 //const char* password = "sit0972001";
 
-const char* ssid = "Avilash Wifi";
-const char* password = "babil2001";
+//const char* ssid = "Avilash Wifi";
+//const char* password = "babil2001";
 
-//const char* ssid = "realme 2"; //ssid of your wifi
-//const char* password = "87654321"; //password of your wifi
+const char* ssid = "realme 2"; //ssid of your wifi
+const char* password = "87654321"; //password of your wifi
 
 Dictionary &payload = *(new Dictionary());
 Dictionary &GPS = *(new Dictionary());
